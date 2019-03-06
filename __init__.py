@@ -5,8 +5,8 @@ import RPi.GPIO as GPIO
 app = Flask(__name__)
 api = Api(app)
 
-lBulb = 7  # GPIO.BOARD=15 OR GPIO.BCM=22
-GPIO.setmode(GPIO.BCM)  # Pin-Numbers by Broadcom SOC Channel
+lBulb = 4  # GPIO.BOARD=15 OR GPIO.BCM=22
+GPIO.setmode(GPIO.BOARD)  # Pin-Numbers by Broadcom SOC Channel
 
 
 class Config:
