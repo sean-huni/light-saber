@@ -5,7 +5,7 @@ import RPi.GPIO as GPIO
 app = Flask(__name__)
 api = Api(app)
 
-lBulb = 22  # GPIO.BOARD=15 OR GPIO.BCM=22
+lBulb = 7  # GPIO.BOARD=15 OR GPIO.BCM=22
 GPIO.setmode(GPIO.BCM)  # Pin-Numbers by Broadcom SOC Channel
 
 
@@ -43,7 +43,8 @@ api.add_resource(ToggleSwitch, '/api/v1/device/<device>')  # Route_1
 if __name__ == '__main__':
     try:
         Config.config()
-        app.run(port='8083')
+        app.debug = True
+        app.run(host='0.0.0.0', port='8083')
     except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the flowing code will be  executed.
         print(" Oh Noo, looks like our fun has been cut-short!!!")
         Config.clear_up()
