@@ -31,12 +31,12 @@ class ToggleSwitch(Resource):
         if device == 1:
             if switch == 1:
                 GPIO.output(lBulb, GPIO.LOW)
+                print("Light-Turned: ONN")
             else:
                 GPIO.output(lBulb, GPIO.HIGH)
-
+                print("Light-Turned: OFF")
         resp = {'response': 'successful', 'code': 200}
         return jsonify(resp)
-
 
 api.add_resource(ToggleSwitch, '/api/v1/device/<device>')  # Route_1
 
