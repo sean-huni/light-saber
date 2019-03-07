@@ -10,12 +10,11 @@ GPIO.setmode(GPIO.BOARD)  # Pin-Numbers by Broadcom SOC Channel
 
 
 class Config:
-    @staticmethod
+    
     def config():
         GPIO.setup(lBulb, GPIO.OUT)  # Relay Module Channel 1
         GPIO.output(lBulb, GPIO.LOW)  # Turn off Chanel 1
 
-    @staticmethod
     def clear_up():
         GPIO.output(lBulb, GPIO.LOW)  # GREEN LED-OFF
         GPIO.cleanup()  # Release Hardware Resources
