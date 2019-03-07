@@ -10,14 +10,26 @@ GPIO.setmode(GPIO.BOARD)  # Pin-Numbers by Broadcom SOC Channel
 
 
 class Config:
-    
+
+    @staticmethod
     def config():
         GPIO.setup(lBulb, GPIO.OUT)  # Relay Module Channel 1
         GPIO.output(lBulb, GPIO.LOW)  # Turn off Chanel 1
 
+    @staticmethod
     def clear_up():
         GPIO.output(lBulb, GPIO.LOW)  # GREEN LED-OFF
         GPIO.cleanup()  # Release Hardware Resources
+
+    @staticmethod
+    def onn():
+        GPIO.output(lBulb, GPIO.LOW)
+        print("Light-Turned: ONN")
+
+    @staticmethod
+    def off():
+        GPIO.output(lBulb, GPIO.HIGH)
+        print("Light-Turned: OFF")
 
 
 class ToggleSwitch(Resource):
@@ -29,16 +41,15 @@ class ToggleSwitch(Resource):
 
         if device == '1':
             if switch == '1':
-                GPIO.output(lBulb, GPIO.LOW)
-                print("Light-Turned: ONN")
+                Config.onn()
             else:
-                GPIO.output(lBulb, GPIO.HIGH)
-                print("Light-Turned: OFF")
+                Config.off()
         else:
             print('No device found...')
 
         resp = {'response': 'successful', 'code': 200}
         return jsonify(resp)
+
 
 api.add_resource(ToggleSwitch, '/api/v1/device/<device>')  # Route_1
 
