@@ -5,14 +5,15 @@ import RPi.GPIO as GPIO
 app = Flask(__name__)
 api = Api(app)
 
-lBulb = 4  # GPIO.BOARD=15 OR GPIO.BCM=22
-GPIO.setmode(GPIO.BOARD)  # Pin-Numbers by Broadcom SOC Channel
+lBulb = 22  # GPIO.BOARD=22 OR GPIO.BCM=25
 
 
 class Config:
 
     @staticmethod
     def config():
+        print('GPIO.BOARD.lBulb: ' + str(lBulb))
+        GPIO.setmode(GPIO.BOARD)  # Pin-Numbers by Broadcom SOC Channel
         GPIO.setup(lBulb, GPIO.OUT)  # Relay Module Channel 1
         GPIO.output(lBulb, GPIO.LOW)  # Turn off Chanel 1
 
@@ -40,7 +41,7 @@ class ToggleSwitch(Resource):
         print(resp)
 
         if device == '1':
-            if switch == '1':
+            if switch == 'ONN':
                 Config.onn()
             else:
                 Config.off()
