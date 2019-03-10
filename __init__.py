@@ -15,7 +15,7 @@ class Config:
         print('GPIO.BOARD.lBulb: ' + str(lBulb))
         GPIO.setmode(GPIO.BOARD)  # Pin-Numbers by Broadcom SOC Channel
         GPIO.setup(lBulb, GPIO.OUT)  # Relay Module Channel 1
-        GPIO.output(lBulb, GPIO.LOW)  # Turn off Chanel 1
+        GPIO.output(lBulb, GPIO.HIGH)  # Turn off Chanel 1
 
     @staticmethod
     def clear_up():
