@@ -138,5 +138,3 @@ if __name__ == '__main__':
         print("Oh Noo, looks like our fun has been cut-short!!!")
         Config.clear_up()
 
-api.add_resource(ToggleSwitch, '/api/v1/device/<device>')  # Route_1
-
