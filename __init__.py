@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 import RPi.GPIO as GPIO
+import datetime as dt
+from json import dumps
 
 app = Flask(__name__)
 api = Api(app)
@@ -96,9 +98,9 @@ class Config:
 class ToggleSwitch(Resource):
     def put(self, device):
         switch = request.json['switch']
-        resp = {'data': 'device-id: ' + device, 'switch': switch}
+        req = {'data': 'device-id: ' + device, 'switch': switch}
 
-        print(resp)
+        print(req)
 
         if device == '1':
             if switch == 'ONN':
@@ -127,7 +129,19 @@ class ToggleSwitch(Resource):
         return jsonify(resp)
 
 
-api.add_resource(ToggleSwitch, '/api/v1/device/<device>')  # Route_1
+class HealthCheck(Resource):
+    def get(self):
+        name = 'RPi-1'
+        deviceType = 'HOST_DEVICE'
+        status = 'ONLINE'
+        lDateTime = dumps(dt.datetime.now(), indent=4, sort_keys=True, default=str)
+        resp = {'name': str(name), 'deviceType': deviceType, 'eStatus': status, 'lDateTime': str(lDateTime).strip('"')}
+        print(resp)
+        return jsonify(resp)
+
+
+api.add_resource(HealthCheck, '/api/v1/host')  # Route_1
+api.add_resource(ToggleSwitch, '/api/v1/device/<device>')  # Route_2
 
 if __name__ == '__main__':
     try:
