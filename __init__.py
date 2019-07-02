@@ -9,7 +9,7 @@ api = Api(app)
 
 lBulb = 22  # GPIO.BOARD=22 OR GPIO.BCM=25  >>> GPIO 25
 ledRed = 11  # GPIO 17
-ledGreen = 13  # GPIO 15
+ledGreen = 13  # GPIO 27
 ledBlue = 15  # GPIO 22
 
 
