@@ -141,7 +141,7 @@ class HealthCheck(Resource):
 
 
 api.add_resource(HealthCheck, '/api/v1/host')  # Route_1
-api.add_resource(ToggleSwitch, '/api/v1/device/<device>')  # Route_2
+api.add_resource(ToggleSwitch, '/api/v1/devices/<device>')  # Route_2
 
 if __name__ == '__main__':
     try:
