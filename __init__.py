@@ -3,6 +3,7 @@ from flask_restful import Resource, Api
 import RPi.GPIO as GPIO
 import datetime as dt
 from json import dumps
+from voice import Voice 
 
 app = Flask(__name__)
 api = Api(app)
@@ -36,6 +37,7 @@ class Config:
 
     @staticmethod
     def clear_up():
+        VoiceCmd('System Shutdown Sequence in execution...', 'voice-feedback/speech_system-shutdown.mp3')
         GPIO.output(lBulb, GPIO.LOW)  # Light-Bulb LED-OFF
         GPIO.output(ledRed, GPIO.LOW)  # RED LED-OFF
         GPIO.output(ledGreen, GPIO.LOW)  # GREEN LED-OFF
@@ -48,12 +50,12 @@ class Config:
     @staticmethod
     def bulb_onn():
         GPIO.output(lBulb, GPIO.LOW)
-        print("Light-Turned: ONN")
+        VoiceCmd('Swimming Pool Flood-Light-1: ON', 'voice-feedback/speech_sp-fl-1-on.mp3')
 
     @staticmethod
     def bulb_off():
         GPIO.output(lBulb, GPIO.HIGH)
-        print("Light-Turned: OFF")
+        VoiceCmd('Swimming Pool Flood-Light-1: OFF', 'voice-feedback/speech_sp-fl-1-off.mp3')
 
     """
     RED-LED-LIGHT
@@ -61,12 +63,12 @@ class Config:
     @staticmethod
     def led_red_onn():
         GPIO.output(ledRed, GPIO.LOW)
-        print("RED-LED-LIGHT: ONN")
+        VoiceCmd('Backyard Flood-Light-1: ON', 'voice-feedback/speech_by-fl-1-on.mp3')
 
     @staticmethod
     def led_red_off():
         GPIO.output(ledRed, GPIO.HIGH)
-        print("RED-LED-LIGHT: OFF")
+        VoiceCmd('Backyard Flood-Light-1: OFF', 'voice-feedback/speech_by-fl-1-off.mp3')
 
     """
     GREEN-LED-LIGHT
@@ -74,12 +76,12 @@ class Config:
     @staticmethod
     def led_green_onn():
         GPIO.output(ledGreen, GPIO.LOW)
-        print("GREEN-LED-LIGHT: ONN")
+        VoiceCmd('Backyard Flood-Light-2: ON', 'voice-feedback/speech_by-fl-2-on.mp3')
 
     @staticmethod
     def led_green_off():
         GPIO.output(ledGreen, GPIO.HIGH)
-        print("GREEN-LED-LIGHT: OFF")
+        VoiceCmd('Backyard Flood-Light-2: OFF', 'voice-feedback/speech_by-fl-2-off.mp3')
 
     """
     BLUE-LED-LIGHT
@@ -87,16 +89,34 @@ class Config:
     @staticmethod
     def led_blue_onn():
         GPIO.output(ledBlue, GPIO.LOW)
-        print("BLUE-LED-LIGHT: ONN")
+        VoiceCmd('Swimming Pool Flood-Light-2: ON', 'voice-feedback/speech_sp-fl-2-on.mp3')
+
 
     @staticmethod
     def led_blue_off():
         GPIO.output(ledBlue, GPIO.HIGH)
-        print("BLUE-LED-LIGHT: OFF")
+        VoiceCmd('Swimming Pool Flood-Light-2: OFF', 'voice-feedback/speech_sp-fl-2-off.mp3')
+
+    @staticmethod
+    def all_lights_off():
+        GPIO.output(ledBlue, GPIO.HIGH)
+        GPIO.output(ledGreen, GPIO.HIGH)
+        GPIO.output(ledRed, GPIO.HIGH)
+        GPIO.output(lBulb, GPIO.HIGH)
+        VoiceCmd('All Flood Lights: OFF', 'voice-feedback/speech_all-fl-off.mp3')
+
+    @staticmethod
+    def all_lights_on():
+        GPIO.output(ledBlue, GPIO.LOW)
+        GPIO.output(ledGreen, GPIO.LOW)
+        GPIO.output(ledRed, GPIO.LOW)
+        GPIO.output(lBulb, GPIO.LOW)
+        VoiceCmd('All Flood Lights: ON', 'voice-feedback/speech_all-fl-on.mp3')
 
 
 class ToggleSwitch(Resource):
     def put(self, device):
+        print(request.json)
         switch = request.json['switch']
         req = {'data': 'device-id: ' + device, 'switch': switch}
 
@@ -122,6 +142,11 @@ class ToggleSwitch(Resource):
                 Config.led_blue_onn()
             else:
                 Config.led_blue_off()
+        elif device == '101':
+             if switch == 'ONN':
+                Config.all_lights_on()
+             else:
+                Config.all_lights_off()
         else:
             print('No device found...')
 
@@ -140,15 +165,24 @@ class HealthCheck(Resource):
         return jsonify(resp)
 
 
+class VoiceCmd:
+   def __init__(self, msg, filename):
+       print(msg)
+       init = Voice(filename)
+       init.play()
+
+
 api.add_resource(HealthCheck, '/api/v1/host')  # Route_1
 api.add_resource(ToggleSwitch, '/api/v1/devices/<device>')  # Route_2
 
 if __name__ == '__main__':
     try:
+        VoiceCmd('System Startup sequence in execution', 'voice-feedback/speech_system-startup.mp3')
         Config.config()
         app.debug = True
+        VoiceCmd('System Initialisation Completed!!!', 'voice-feedback/speech_system-init-complete.mp3')
         app.run(host='0.0.0.0', port='8083')
-    except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the flowing code will be  executed.
+    except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the flowing code will be executed.
         print("Oh Noo, looks like our fun has been cut-short!!!")
         Config.clear_up()
 
