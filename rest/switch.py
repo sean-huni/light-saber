@@ -4,8 +4,8 @@ from json import dumps
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 
+from commons.utility import Utility
 from service.switch_service import SwitchService
-from utility.Common import Utility
 
 app = Flask(__name__)
 api = Api(app)

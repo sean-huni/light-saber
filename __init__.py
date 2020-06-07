@@ -1,7 +1,7 @@
 from command.voice import VoiceCmd
+from commons.utility import Utility
 from gpio.flood_lights import FloodLights
 from rest.switch import api, HealthCheck, ToggleSwitch
-from utility.Common import Utility
 
 
 class Main:
