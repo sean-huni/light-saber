@@ -1,7 +1,7 @@
 from gpio.config import Config
 
 
-class Logic:
+class SwitchService:
     def toggle(self, device, switch):
 
         if device == '1':
