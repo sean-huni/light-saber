@@ -8,7 +8,7 @@ from rest.switch import api
 
 class Main:
     def __init__(self):
-        print('{0}: Main-instance Instantiated successfully!!!'.self.getStrDate())
+        print('{0}: Main-instance Instantiated successfully!!!'.format(self.getStrDate()))
 
     def getStrDate(self) -> str:
         lDateTime = dumps(dt.datetime.now(), indent=4, sort_keys=True, default=str)
