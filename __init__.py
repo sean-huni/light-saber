@@ -27,5 +27,5 @@ class Main:
 
 
 if __name__ == '__main__':
-    msg =  Main.getStrDate();
-    print('{0}: App Initiated successfully!!!'.msg)
+    msg =  str(Main.getStrDate(self=Main))
+    print(msg+': App Initiated successfully!!!')
