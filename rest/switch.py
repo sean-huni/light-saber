@@ -11,13 +11,14 @@ api = Api(app)
 
 switchService = SwitchService
 
+
 class ToggleSwitch(Resource):
     def put(self, device):
         print(request.json)
         switch = request.json['switch']
         req = {'data': 'device-id: ' + device, 'switch': switch}
 
-        switchService.toggle(device, switch)
+        switchService.toggle(switchService, device, switch)
         print('{0}: Request: {1}'.format(StrMsg.getStrDate(), req))
 
         resp = {'response': 'successful', 'code': 200}
