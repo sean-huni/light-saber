@@ -29,7 +29,3 @@ class HealthCheck(Resource):
         resp = {'name': str(name), 'deviceType': deviceType, 'eStatus': status, 'lDateTime': str(lDateTime).strip('"')}
         print(resp)
         return jsonify(resp)
-
-
-api.add_resource(HealthCheck, '/api/v1/host')  # Route_1
-api.add_resource(ToggleSwitch, '/api/v1/devices/<device>')  # Route_2
