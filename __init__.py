@@ -27,4 +27,5 @@ class Main:
 
 
 if __name__ == '__main__':
-    print('{0}: App Initiated successfully!!!'.Main.getStrDate())
+    msg =  Main.getStrDate();
+    print('{0}: App Initiated successfully!!!'.msg)
