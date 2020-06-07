@@ -179,8 +179,8 @@ if __name__ == '__main__':
     try:
         VoiceCmd('System Startup sequence in execution', 'voice-feedback/speech_system-startup.mp3')
         Config.config()
-        app.debug = True
         VoiceCmd('System Initialisation Completed!!!', 'voice-feedback/speech_system-init-complete.mp3')
+        app.debug = True
         app.run(host='0.0.0.0', port='8083')
     except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the flowing code will be executed.
         print("Oh Noo, looks like our fun has been cut-short!!!")
