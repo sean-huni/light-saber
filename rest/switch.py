@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 
 from service.switch_service import SwitchService
+from utility.Common import Utility
 
 app = Flask(__name__)
 api = Api(app)
@@ -19,10 +20,10 @@ class ToggleSwitch(Resource):
         req = {'data': 'device-id: ' + device, 'switch': switch}
 
         switchService.toggle(switchService, device, switch)
-        print('{0}: Request: {1}'.format(StrMsg.getStrDate(), req))
+        print('{0}: Request: {1}'.format(Utility.getStrDate(), req))
 
         resp = {'response': 'successful', 'code': 200}
-        print('{0}: {1}'.format(StrMsg.getStrDate(), resp))
+        print('{0}: {1}'.format(Utility.getStrDate(), resp))
         return jsonify(resp)
 
 
@@ -33,13 +34,5 @@ class HealthCheck(Resource):
         status = 'ONLINE'
         lDateTime = dumps(dt.datetime.now(), indent=4, sort_keys=True, default=str)
         resp = {'name': str(name), 'deviceType': deviceType, 'eStatus': status, 'lDateTime': str(lDateTime).strip('"')}
-        print('{0}: Response: {1}'.format(StrMsg.getStrDate(), resp))
+        print('{0}: Response: {1}'.format(Utility.getStrDate(), resp))
         return jsonify(resp)
-
-
-class StrMsg:
-    @staticmethod
-    def getStrDate() -> str:
-        lDateTime = dumps(dt.datetime.now(), indent=4, sort_keys=True, default=str)
-        resp = str(lDateTime).strip('"')
-        return resp

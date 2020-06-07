@@ -1,4 +1,4 @@
-from gpio.config import Config
+from gpio.flood_lights import FloodLights
 
 
 class SwitchService:
@@ -6,28 +6,28 @@ class SwitchService:
 
         if device == '1':
             if switch == 'ONN':
-                Config.bulb_onn()
+                FloodLights.bulb_onn()
             else:
-                Config.bulb_off()
+                FloodLights.bulb_off()
         elif device == '2':
             if switch == 'ONN':
-                Config.led_red_onn()
+                FloodLights.led_red_onn()
             else:
-                Config.led_red_off()
+                FloodLights.led_red_off()
         elif device == '3':
             if switch == 'ONN':
-                Config.led_green_onn()
+                FloodLights.led_green_onn()
             else:
-                Config.led_green_off()
+                FloodLights.led_green_off()
         elif device == '4':
             if switch == 'ONN':
-                Config.led_blue_onn()
+                FloodLights.led_blue_onn()
             else:
-                Config.led_blue_off()
+                FloodLights.led_blue_off()
         elif device == '101':
             if switch == 'ONN':
-                Config.all_lights_on()
+                FloodLights.all_lights_on()
             else:
-                Config.all_lights_off()
+                FloodLights.all_lights_off()
         else:
             print('No device found...')
