@@ -23,10 +23,10 @@ if __name__ == '__main__':
         api.app.debug = True
         VoiceCmd('{0}: System Initialisation Completed!!!'.format(str(main.getStrDate())), 'command/sp/speech_system-init-complete.mp3')
         api.app.run(host='0.0.0.0', port='8083')
-        FloodLights.clear_up()
     except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the flowing code will be executed.
         print('{0}: Graceful Termination'.format(str(main.getStrDate())))
-        FloodLights.clear_up()
     except Exception:
         print('{0}: System Error'.format(str(main.getStrDate())))
+    finally:
+        print('{0}: System Clean-up'.format(str(main.getStrDate())))
         FloodLights.clear_up()
