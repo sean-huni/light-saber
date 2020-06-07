@@ -23,7 +23,8 @@ if __name__ == '__main__':
                  'command/sp/speech_system-startup.mp3')
         Config.config()
         api.app.debug = True
-        VoiceCmd('{0}: System Initialisation Completed!!!'.format('command/sp/speech_system-init-complete.mp3'))
+        VoiceCmd('{0}: System Initialisation Completed!!!'.format(str(main.getStrDate())),
+                 'command/sp/speech_system-init-complete.mp3')
         api.app.run(host='0.0.0.0', port='8083')
     except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the flowing code will be executed.
         print('{0}: Oh Noo, looks like our fun has been cut-short!!!'.format(str(main.getStrDate())))
