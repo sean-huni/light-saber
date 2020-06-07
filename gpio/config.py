@@ -36,7 +36,9 @@ class Config:
         GPIO.output(ledRed, GPIO.LOW)  # RED LED-OFF
         GPIO.output(ledGreen, GPIO.LOW)  # GREEN LED-OFF
         GPIO.output(ledBlue, GPIO.LOW)  # BLUE LED-OFF
+        VoiceCmd('All Flood Lights: OFF', 'command/sp/speech_all-fl-off.mp3')
         GPIO.cleanup()  # Release Hardware Resources
+        VoiceCmd('System Shutdown Sequence Completed...', 'command/sp/speech_shutdown-sequence-complete.mp3')
 
     """
     NEON-LIGHT BULB
