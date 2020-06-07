@@ -20,7 +20,7 @@ class Main:
             print('{0}: Oh Noo, looks like our fun has been cut-short!!!'.format(Main.getStrDate(self)))
             Config.clear_up()
 
-    def getStrDate(self):
+    def getStrDate(self) -> str:
         lDateTime = dumps(dt.datetime.now(), indent=4, sort_keys=True, default=str)
         resp = str(lDateTime).strip('"')
         return resp
