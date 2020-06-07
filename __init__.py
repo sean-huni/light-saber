@@ -28,5 +28,6 @@ if __name__ == '__main__':
     except Exception:
         print('{0}: System Error'.format(str(main.getStrDate())))
     finally:
-        print('{0}: System Clean-up'.format(str(main.getStrDate())))
+        print('{0}: GPIO Cleanup'.format(str(main.getStrDate())))
         FloodLights.clear_up()
+        print('{0}: System shutdown'.format(str(main.getStrDate())))
