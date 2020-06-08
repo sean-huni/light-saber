@@ -1,3 +1,4 @@
+import re
 import subprocess
 import sys
 import time
@@ -42,8 +43,13 @@ class LcdDevice:
     async def print_cpu_data(self):
         while self.x:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
-            cpu = float(cpu)
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
+            cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
+            gpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', gpu)
+            print('{0}: CPU: {1}'.format(Utility.getStrDate(), cpu))
+            print('{0}: GPU: {1}'.format(Utility.getStrDate(), gpu))
+
+            cpu = float(cpu)
             gpu = float(gpu)
 
             # lcd.clear()
