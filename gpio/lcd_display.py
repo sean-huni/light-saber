@@ -46,12 +46,11 @@ class LcdDevice:
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
             gpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', gpu)
+            cpu = float(cpu[0]) / 1000
+            gpu = float(gpu[0])
             print('{0}: CPU: {1}'.format(Utility.getStrDate(), cpu))
             print('{0}: GPU: {1}'.format(Utility.getStrDate(), gpu))
 
-            cpu = float(cpu[0])/1000
-            gpu = float(gpu[0])
-
-            # lcd.clear()
+            self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}°C\nGPU: {1:.2f}°C'.format(cpu, gpu))
             time.sleep(1.0)
