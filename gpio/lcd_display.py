@@ -2,8 +2,6 @@ import subprocess
 import sys
 import time
 
-from gpiozero import CPUTemperature
-
 from commons.utility import Utility
 
 sys.path.append('/home/pi/proj/python/pi/Adafruit_Python_CharLCD')
@@ -43,7 +41,8 @@ class LcdDevice:
     # Async method that executes behind the scenes to print resource-temperatures :-)
     async def print_cpu_data(self):
         while self.x:
-            cpu = CPUTemperature()
+            cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
+            cpu = float(cpu)
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             gpu = float(gpu)
 
