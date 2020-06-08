@@ -1,7 +1,7 @@
+import subprocess
 import sys
 import time
 
-import commands
 from gpiozero import CPUTemperature
 
 from commons.utility import Utility
@@ -44,7 +44,7 @@ class LcdDevice:
     async def print_cpu_data(self):
         while self.x:
             cpu = CPUTemperature()
-            gpu = commands.getoutput('/opt/vc/bin/vcgencmd measure_temp')
+            gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             gpu = float(gpu)
 
             # lcd.clear()
