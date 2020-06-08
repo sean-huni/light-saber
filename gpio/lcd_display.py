@@ -49,8 +49,8 @@ class LcdDevice:
             print('{0}: CPU: {1}'.format(Utility.getStrDate(), cpu))
             print('{0}: GPU: {1}'.format(Utility.getStrDate(), gpu))
 
-            cpu = float(cpu)
-            gpu = float(gpu)
+            cpu = float(cpu[0])/1000
+            gpu = float(gpu[0])
 
             # lcd.clear()
             self.lcd.message('CPU: {0:.2f}°C\nGPU: {1:.2f}°C'.format(cpu, gpu))
