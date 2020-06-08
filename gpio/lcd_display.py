@@ -1,3 +1,4 @@
+import asyncio
 import re
 import subprocess
 import sys
@@ -37,7 +38,9 @@ class LcdDevice:
         self.lcd.message(str(msg))
         time.sleep(5.0)
         self.x = True
-        self.print_cpu_data()
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.print_cpu_data())
+        loop.close()
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     async def print_cpu_data(self):
@@ -54,3 +57,6 @@ class LcdDevice:
             self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}°C\nGPU: {1:.2f}°C'.format(cpu, gpu))
             time.sleep(1.0)
+
+        await asyncio.sleep(self)
+        print('{0}: Async print_cpu_data laid to rest.'.format(Utility.getStrDate()))
