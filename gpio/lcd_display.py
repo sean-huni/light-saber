@@ -3,8 +3,8 @@
 import re
 import subprocess
 import sys
-import threading
 import time
+from multiprocessing import *
 
 from commons.utility import Utility
 
@@ -26,9 +26,9 @@ lcd_rows = 2
 
 
 class LcdDevice:
+    p = None
     x = False
     lcd = None
-    p = None
 
     def __init__(self):
         # Initialize the LCD using the pins above.
@@ -36,14 +36,19 @@ class LcdDevice:
         print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
 
     def display_msg(self, msg):
+
+        if(self.x == True):
+            self.p.terminate()
+
         # Print a message
         self.lcd.clear()
         self.lcd.message(str(msg))
         time.sleep(5.0)
-        self.x = True
 
-        p = threading.Thread(target=self.print_cpu_data())
-        p.start()
+        self.x = True
+        self.p = Process(target=self.print_cpu_data())
+        self.p.start()
+        print('{0}: is Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
