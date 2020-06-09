@@ -56,6 +56,7 @@ class LcdDevice:
     def print_cpu_data(self):
         self.brk_ = False
         LcdDevice.brk_ = False
+        LcdDevice.lcd = self.lcd
         while not LcdDevice.brk_:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
@@ -66,7 +67,6 @@ class LcdDevice:
             print('{0}: CPU: {1:.2f}{3}C\tGPU: {2:.2f}{3}C'.format(Utility.getStrDate(), cpu, gpu, '°'))
 
             self.lcd.clear()
-            LcdDevice.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
             print('\n{0}'.format(LcdDevice.brk_))
