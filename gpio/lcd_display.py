@@ -44,7 +44,7 @@ class LcdDevice:
         LcdDevice.lcd.message(str(msg))
         time.sleep(3.0)
 
-        if LcdDevice.is_looping(LcdDevice):
+        if LcdDevice.is_looping():
             LcdDevice.x = False
             LcdDevice.kill_live_processes()
 
@@ -56,7 +56,7 @@ class LcdDevice:
     @staticmethod
     def print_cpu_data():
         LcdDevice.x = True
-        while LcdDevice.is_looping(LcdDevice):
+        while LcdDevice.is_looping():
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
@@ -68,14 +68,14 @@ class LcdDevice:
             LcdDevice.lcd.clear()
             LcdDevice.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
-            if not LcdDevice.is_looping(LcdDevice):
+            if not LcdDevice.is_looping():
                 break
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
     @staticmethod
-    def is_looping(self) -> bool:
-        return self.x
+    def is_looping() -> bool:
+        return x
 
     @staticmethod
     def kill_live_processes():
