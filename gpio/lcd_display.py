@@ -24,40 +24,39 @@ lcd_backlight = 4
 lcd_columns = 16
 lcd_rows = 2
 
-_LOOP = False
-lcd = None
-p = None
-
 
 class LcdDevice:
-    global _LOOP
-    global p
-    global lcd
+    p = None
+    brk_ = False
+    lcd = None
 
     def __init__(self):
-        if lcd is None:
+        if self.lcd is None:
             # Initialize the LCD using the pins above.
-            LcdDevice.lcd = LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
+            self.lcd = LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
             print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
 
     def display_msg(self, msg):
         # Print a message
-        LcdDevice.lcd.clear()
-        LcdDevice.lcd.message(str(msg))
+        self.lcd.clear()
+        self.lcd.message(str(msg))
         time.sleep(3.0)
 
-        if self.is_looping():
-            self.set_loop(self, False)
+        if self.brk_:
+            self.brk_ = False
+            LcdDevice.brk_ = False
             LcdDevice.kill_live_processes()
 
-        LcdDevice.p = Process(target=self.print_cpu_data)  # , args=(self,)
-        LcdDevice.p.start()
+        self.p = Process(target=self.print_cpu_data)  # , args=(self,)
+        self.p.start()
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
+        LcdDevice.p = self.p
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
-        self.set_loop(self, True)
-        while self.is_looping():
+        self.brk_ = False
+        LcdDevice.brk_ = False
+        while not LcdDevice.brk_:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
@@ -67,21 +66,14 @@ class LcdDevice:
             print('{0}: CPU: {1:.2f}{3}C\tGPU: {2:.2f}{3}C'.format(Utility.getStrDate(), cpu, gpu, '°'))
 
             self.lcd.clear()
+            LcdDevice.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
-            print(self.is_looping())
-            # if not self._LOOP:
+            print('\n{0}'.format(LcdDevice.brk_))
+            # if self._LOOP:
             #     break
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
-
-    @staticmethod
-    def is_looping() -> bool:
-        return _LOOP
-
-    @staticmethod
-    def set_loop(self, val):
-        self._LOOP = val
 
     @staticmethod
     def kill_live_processes():
