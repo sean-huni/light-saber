@@ -25,9 +25,12 @@ lcd_columns = 16
 lcd_rows = 2
 
 
+class Globe:
+    global p, brk
+
+
 class LcdDevice:
     p = None
-    brk_ = False
     lcd = None
 
     def __init__(self):
@@ -42,24 +45,21 @@ class LcdDevice:
         self.lcd.message(str(msg))
         time.sleep(3.0)
 
-        if not self.brk_:
-            self.brk_ = True
-            LcdDevice.brk_ = True
+        if not Globe.brk:
+            Globe.brk = True
             LcdDevice.kill_live_processes()
 
         process.daemon = True
         self.p = Process(target=self.print_cpu_data)  # , args=(self,)
         self.p.start()
         self.p.join()
+        Globe.p = self.p
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
-        LcdDevice.p = self.p
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
-        self.brk_ = False
-        LcdDevice.brk_ = False
-        LcdDevice.lcd = self.lcd
-        while not LcdDevice.brk_:
+        Globe.brk = False
+        while not Globe.brk:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
@@ -67,21 +67,21 @@ class LcdDevice:
             cpu = float(cpu[0]) / 1000
             gpu = float(gpu[0])
             print('{0}: CPU: {1:.2f}{3}C\tGPU: {2:.2f}{3}C'.format(Utility.getStrDate(), cpu, gpu, '°'))
-
             self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
-            print('\n{0}'.format(LcdDevice.brk_))
-            if LcdDevice.brk_:
+            print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), Globe.brk))
+
+            if Globe.brk:
+                print('{0}: Broken'.format(Utility.getStrDate()))
                 break
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
     @staticmethod
     def kill_live_processes():
-        if LcdDevice.p is not None:
-            print('{0}: staticmethod Proc-Terminated!!! is Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
-            # while LcdDevice.p.is_alive():
-            LcdDevice.p.terminate()
-            LcdDevice.p.join()
-            print('{0}: Proc-Terminated!!! is still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
+        # while LcdDevice.p.is_alive():
+        if Globe.p is not None:
+            Globe.p.terminate()
+            Globe.p.join()
+            print('{0}: Prev-Process-Terminated!!! is Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
