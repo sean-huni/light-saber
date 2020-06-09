@@ -38,8 +38,8 @@ class FloodLights:
         GPIO.output(ledRed, GPIO.LOW)  # RED LED-OFF
         GPIO.output(ledGreen, GPIO.LOW)  # GREEN LED-OFF
         GPIO.output(ledBlue, GPIO.LOW)  # BLUE LED-OFF
-        VoiceCmd('All Flood Lights: OFF', 'audio/sp/speech_all-fl-off.mp3')
         GPIO.cleanup()  # Release Hardware Resources
+        VoiceCmd('All Flood Lights: OFF', 'audio/sp/speech_all-fl-off.mp3')
         VoiceCmd('System Shutdown Sequence Completed...', 'audio/sp/speech_shutdown-sequence-complete.mp3')
 
     """
