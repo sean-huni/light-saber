@@ -50,7 +50,7 @@ class LcdDevice:
             self.set_loop(self, False)
             LcdDevice.kill_live_processes()
 
-        LcdDevice.p = Process(target=self.print_cpu_data)
+        LcdDevice.p = Process(target=self.print_cpu_data, args=(self,))
         LcdDevice.p.start()
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
