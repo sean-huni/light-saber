@@ -38,16 +38,18 @@ class LcdDevice:
     def display_msg(self, msg):
 
         if LcdDevice.x:
-            LcdDevice.p.terminate()
+            LcdDevice.set_looping(False)
+            # LcdDevice.p.terminate()
+            print('{0}: Thread Terminated!!! is Thread still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
 
         # Print a message
-        self.lcd.clear()
-        self.lcd.message(str(msg))
+        LcdDevice.lcd.clear()
+        LcdDevice.lcd.message(str(msg))
         time.sleep(5.0)
 
-        LcdDevice.p = Process(target=self.print_cpu_data)
+        LcdDevice.p = Process(target=LcdDevice.print_cpu_data)
         LcdDevice.p.start()
-        print('{0}: is Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
+        print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
@@ -61,8 +63,8 @@ class LcdDevice:
             gpu = float(gpu[0])
             print('{0}: CPU: {1:.2f}{3}C\tGPU: {2:.2f}{3}C'.format(Utility.getStrDate(), cpu, gpu, '°'))
 
-            self.lcd.clear()
-            self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
+            LcdDevice.lcd.clear()
+            LcdDevice.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
