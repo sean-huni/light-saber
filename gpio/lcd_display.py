@@ -42,13 +42,14 @@ class LcdDevice:
         self.lcd.message(str(msg))
         time.sleep(3.0)
 
-        if self.brk_:
-            self.brk_ = False
-            LcdDevice.brk_ = False
+        if not self.brk_:
+            self.brk_ = True
+            LcdDevice.brk_ = True
             LcdDevice.kill_live_processes()
 
         self.p = Process(target=self.print_cpu_data)  # , args=(self,)
         self.p.start()
+        self.p.join()
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
         LcdDevice.p = self.p
 
