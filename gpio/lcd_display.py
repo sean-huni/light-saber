@@ -45,11 +45,14 @@ class LcdDevice:
         self.lcd.message(str(msg))
         time.sleep(3.0)
 
-        if not brk:
-            brk = True
-            LcdDevice.kill_live_processes()
+        try:
+            if brk != True:
+                brk = True
+                LcdDevice.kill_live_processes()
+        except NameError:
+            print('Nothing!!!')
 
-        process.daemon = True
+        # process.daemon = True
         self.p = Process(target=self.print_cpu_data)  # , args=(self,)
         self.p.start()
         self.p.join()
