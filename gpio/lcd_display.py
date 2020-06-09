@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import asyncio
+
 import re
 import subprocess
 import sys
 import time
+from multiprocessing import Process
 
 from commons.utility import Utility
 
@@ -27,6 +28,7 @@ lcd_rows = 2
 class LcdDevice:
     x = False
     lcd = None
+    p = None
 
     def __init__(self):
         # Initialize the LCD using the pins above.
@@ -39,13 +41,12 @@ class LcdDevice:
         self.lcd.message(str(msg))
         time.sleep(5.0)
         self.x = True
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(self.print_cpu_data())
-        loop.close()
+
+        p = Process(target=self.print_cpu_data())
+        p.start()
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
-    async def print_cpu_data(self):
+    def print_cpu_data(self):
         while self.x:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
@@ -57,7 +58,7 @@ class LcdDevice:
 
             self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
-            await asyncio.sleep(1.0)
+            time.sleep(1.0)
 
         # await asyncio.sleep(1.0)
-        print('{0}: Async print_cpu_data laid to rest.'.format(Utility.getStrDate()))
+        print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
