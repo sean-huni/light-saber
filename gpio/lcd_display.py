@@ -26,6 +26,7 @@ lcd_rows = 2
 
 x = False
 lcd = None
+p = None
 
 
 class LcdDevice:
@@ -44,7 +45,7 @@ class LcdDevice:
         time.sleep(3.0)
 
         if LcdDevice.is_looping():
-            LcdDevice.set_looping(False)
+            LcdDevice.x = False
             LcdDevice.kill_live_processes()
 
         LcdDevice.p = Process(target=LcdDevice.print_cpu_data)
@@ -54,7 +55,7 @@ class LcdDevice:
     # Async method that executes behind the scenes to print resource-temperatures :-)
     @staticmethod
     def print_cpu_data():
-        LcdDevice.set_looping(True)
+        LcdDevice.x = True
         while LcdDevice.is_looping():
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
@@ -74,11 +75,7 @@ class LcdDevice:
 
     @staticmethod
     def is_looping() -> bool:
-        return LcdDevice.x
-
-    @staticmethod
-    def set_looping(x):
-        LcdDevice.x = x
+        return x
 
     @staticmethod
     def kill_live_processes():
