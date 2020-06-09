@@ -70,8 +70,8 @@ class LcdDevice:
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
             print('\n{0}'.format(LcdDevice.brk_))
-            # if self._LOOP:
-            #     break
+            if LcdDevice.brk_:
+                break
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
