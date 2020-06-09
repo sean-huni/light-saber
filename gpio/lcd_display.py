@@ -24,16 +24,18 @@ lcd_backlight = 4
 lcd_columns = 16
 lcd_rows = 2
 
+x = False
+lcd = None
+
 
 class LcdDevice:
-    p = None
-    x = False
-    lcd = None
+    global x, p, lcd
 
     def __init__(self):
-        # Initialize the LCD using the pins above.
-        LcdDevice.lcd = LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
-        print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
+        if lcd is None:
+            # Initialize the LCD using the pins above.
+            LcdDevice.lcd = LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
+            print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
 
     def display_msg(self, msg):
         # Print a message
@@ -41,9 +43,10 @@ class LcdDevice:
         LcdDevice.lcd.message(str(msg))
         time.sleep(3.0)
 
-        # if LcdDevice.is_looping():
-        #     LcdDevice.set_looping(False)
-        LcdDevice.kill_live_processes()
+        if LcdDevice.is_looping():
+            LcdDevice.set_looping(False)
+            LcdDevice.kill_live_processes()
+
         LcdDevice.p = Process(target=LcdDevice.print_cpu_data)
         LcdDevice.p.start()
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
@@ -64,6 +67,8 @@ class LcdDevice:
             LcdDevice.lcd.clear()
             LcdDevice.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
+            if not LcdDevice.is_looping():
+                break
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
