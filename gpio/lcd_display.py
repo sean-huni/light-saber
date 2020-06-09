@@ -24,13 +24,15 @@ lcd_backlight = 4
 lcd_columns = 16
 lcd_rows = 2
 
-x = False
+_LOOP = False
 lcd = None
 p = None
 
 
 class LcdDevice:
-    global x, p, lcd
+    global _LOOP
+    global p
+    global lcd
 
     def __init__(self):
         if lcd is None:
@@ -44,18 +46,18 @@ class LcdDevice:
         LcdDevice.lcd.message(str(msg))
         time.sleep(3.0)
 
-        if LcdDevice.is_looping():
-            LcdDevice.x = False
+        if self.is_looping():
+            self.set_loop(self, False)
             LcdDevice.kill_live_processes()
 
-        LcdDevice.p = Process(target=LcdDevice.print_cpu_data)
+        LcdDevice.p = Process(target=self.print_cpu_data)
         LcdDevice.p.start()
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     @staticmethod
-    def print_cpu_data():
-        LcdDevice.x = True
+    def print_cpu_data(self):
+        self._LOOP = True
         while LcdDevice.is_looping():
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
@@ -65,17 +67,21 @@ class LcdDevice:
             gpu = float(gpu[0])
             print('{0}: CPU: {1:.2f}{3}C\tGPU: {2:.2f}{3}C'.format(Utility.getStrDate(), cpu, gpu, '°'))
 
-            LcdDevice.lcd.clear()
-            LcdDevice.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
+            self.lcd.clear()
+            self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
-            if not LcdDevice.is_looping():
+            if not _LOOP:
                 break
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
     @staticmethod
     def is_looping() -> bool:
-        return x
+        return _LOOP
+
+    @staticmethod
+    def set_loop(self, val):
+        self._LOOP = val
 
     @staticmethod
     def kill_live_processes():
