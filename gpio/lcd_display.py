@@ -24,7 +24,8 @@ lcd_backlight = 4
 lcd_columns = 16
 lcd_rows = 2
 
-global z, brk
+global z
+brk = False
 
 
 class LcdDevice:
@@ -55,7 +56,6 @@ class LcdDevice:
         # process.daemon = True
         self.p = Process(target=self.print_cpu_data)  # , args=(self,)
         self.p.start()
-        self.p.join()
         z = self.p
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
