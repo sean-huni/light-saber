@@ -55,9 +55,8 @@ class LcdDevice:
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
-    @staticmethod
     def print_cpu_data(self):
-        self._LOOP = True
+        self.set_loop(self, True)
         while LcdDevice.is_looping():
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
