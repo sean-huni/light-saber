@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import asyncio
 import re
 import subprocess
@@ -38,7 +39,8 @@ class LcdDevice:
         self.lcd.message(str(msg))
         time.sleep(5.0)
         self.x = True
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         loop.run_until_complete(self.print_cpu_data())
         loop.close()
 
@@ -55,7 +57,7 @@ class LcdDevice:
             print('{0}: GPU: {1}'.format(Utility.getStrDate(), gpu))
 
             self.lcd.clear()
-            self.lcd.message('CPU: {0:.2f}°C\nGPU: {1:.2f}°C'.format(cpu, gpu))
+            self.lcd.message('CPU: {0:.2f}(char)223 C\nGPU: {1:.2f}(char)223 C'.format(cpu, gpu))
             time.sleep(1.0)
 
         await asyncio.sleep(self)
