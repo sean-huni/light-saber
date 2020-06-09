@@ -24,12 +24,11 @@ lcd_backlight = 4
 lcd_columns = 16
 lcd_rows = 2
 
-
-class Globe:
-    global p, brk
+global z, brk
 
 
 class LcdDevice:
+    global z, brk
     p = None
     lcd = None
 
@@ -40,26 +39,29 @@ class LcdDevice:
             print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
 
     def display_msg(self, msg):
+        global z, brk
         # Print a message
         self.lcd.clear()
         self.lcd.message(str(msg))
         time.sleep(3.0)
 
-        if not Globe.brk:
-            Globe.brk = True
+        if not brk:
+            brk = True
             LcdDevice.kill_live_processes()
 
         process.daemon = True
         self.p = Process(target=self.print_cpu_data)  # , args=(self,)
         self.p.start()
         self.p.join()
-        Globe.p = self.p
+        z = self.p
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
-        Globe.brk = False
-        while not Globe.brk:
+        global z, brk
+        brk = False
+        while not brk:
+            global z, brk
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
@@ -70,9 +72,9 @@ class LcdDevice:
             self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
-            print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), Globe.brk))
+            print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), brk))
 
-            if Globe.brk:
+            if brk:
                 print('{0}: Broken'.format(Utility.getStrDate()))
                 break
 
@@ -80,8 +82,9 @@ class LcdDevice:
 
     @staticmethod
     def kill_live_processes():
+        global z, brk
         # while LcdDevice.p.is_alive():
-        if Globe.p is not None:
-            Globe.p.terminate()
-            Globe.p.join()
-            print('{0}: Prev-Process-Terminated!!! is Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
+        if z.p is not None:
+            z.p.terminate()
+            z.p.join()
+            print('{0}: Prev-Process-Terminated!!! is Alive: {1}'.format(Utility.getStrDate(), z.p.is_alive()))
