@@ -53,7 +53,7 @@ class LcdDevice:
             gpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', gpu)
             cpu = float(cpu[0]) / 1000
             gpu = float(gpu[0])
-            print('{0}: CPU: {1:.2f}{3}C\nGPU: {2:.2f}{3}C'.format(Utility.getStrDate(), cpu, gpu, '°'))
+            print('{0}: CPU: {1:.2f}{3}C\tGPU: {2:.2f}{3}C'.format(Utility.getStrDate(), cpu, gpu, '°'))
 
             self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
