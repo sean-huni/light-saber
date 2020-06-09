@@ -3,8 +3,8 @@
 import re
 import subprocess
 import sys
+import threading
 import time
-from multiprocessing import Process
 
 from commons.utility import Utility
 
@@ -42,7 +42,7 @@ class LcdDevice:
         time.sleep(5.0)
         self.x = True
 
-        p = Process(target=self.print_cpu_data())
+        p = threading.Thread(target=self.print_cpu_data())
         p.start()
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
