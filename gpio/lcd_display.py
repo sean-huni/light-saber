@@ -45,8 +45,9 @@ class LcdDevice:
         if not self.brk_:
             self.brk_ = True
             LcdDevice.brk_ = True
-            LcdDevice.kill_live_processes(self)
+            LcdDevice.kill_live_processes()
 
+        process.daemon = True
         self.p = Process(target=self.print_cpu_data)  # , args=(self,)
         self.p.start()
         self.p.join()
@@ -77,11 +78,10 @@ class LcdDevice:
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
     @staticmethod
-    def kill_live_processes(self):
-        if LcdDevice.p is None:
-           LcdDevice.p = self.p
-        print('{0}: staticmethod Proc-Terminated!!! is Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
-        # while LcdDevice.p.is_alive():
-        LcdDevice.p.terminate()
-        LcdDevice.p.join()
-        print('{0}: Proc-Terminated!!! is still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
+    def kill_live_processes():
+        if LcdDevice.p is not None:
+            print('{0}: staticmethod Proc-Terminated!!! is Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
+            # while LcdDevice.p.is_alive():
+            LcdDevice.p.terminate()
+            LcdDevice.p.join()
+            print('{0}: Proc-Terminated!!! is still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
