@@ -39,11 +39,7 @@ class LcdDevice:
 
         if LcdDevice.x:
             LcdDevice.set_looping(False)
-            if LcdDevice.p.is_alive():
-                LcdDevice.p.terminate()
-            time.sleep(1.0)
-            print('{0}: Thread Terminated!!! is Thread still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
-
+            LcdDevice.kill_live_processes()
 
         # Print a message
         LcdDevice.lcd.clear()
@@ -81,3 +77,10 @@ class LcdDevice:
     @staticmethod
     def set_looping(x):
         LcdDevice.x = x
+
+    @staticmethod
+    def kill_live_processes():
+        while LcdDevice.p.is_alive():
+            LcdDevice.p.terminate()
+            time.sleep(0.2)
+            print('{0}: Proc-Terminated!!! is still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
