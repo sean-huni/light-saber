@@ -39,13 +39,16 @@ class LcdDevice:
 
         if LcdDevice.x:
             LcdDevice.set_looping(False)
-            # LcdDevice.p.terminate()
+            if LcdDevice.p.is_alive():
+                LcdDevice.p.terminate()
+            time.sleep(1.0)
             print('{0}: Thread Terminated!!! is Thread still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
+
 
         # Print a message
         LcdDevice.lcd.clear()
         LcdDevice.lcd.message(str(msg))
-        time.sleep(5.0)
+        time.sleep(3.0)
 
         LcdDevice.p = Process(target=LcdDevice.print_cpu_data)
         LcdDevice.p.start()
@@ -69,6 +72,7 @@ class LcdDevice:
             time.sleep(1.0)
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
+        LcdDevice.p.terminate()
 
     @staticmethod
     def is_looping() -> bool:
