@@ -31,9 +31,6 @@ class LcdDevice:
     lcd = None
 
     def __init__(self):
-        if LcdDevice.is_looping():
-            LcdDevice.set_looping(False)
-            LcdDevice.kill_live_processes()
         # Initialize the LCD using the pins above.
         LcdDevice.lcd = LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
         print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
@@ -44,6 +41,9 @@ class LcdDevice:
         LcdDevice.lcd.message(str(msg))
         time.sleep(3.0)
 
+        # if LcdDevice.is_looping():
+        #     LcdDevice.set_looping(False)
+        LcdDevice.kill_live_processes()
         LcdDevice.p = Process(target=LcdDevice.print_cpu_data)
         LcdDevice.p.start()
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
@@ -66,7 +66,6 @@ class LcdDevice:
             time.sleep(1.0)
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
-        LcdDevice.p.terminate()
 
     @staticmethod
     def is_looping() -> bool:
@@ -79,7 +78,7 @@ class LcdDevice:
     @staticmethod
     def kill_live_processes():
         print('{0}: staticmethod Proc-Terminated!!! is Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
-        while LcdDevice.p.is_alive():
-            LcdDevice.p.terminate()
-            time.sleep(0.2)
-            print('{0}: Proc-Terminated!!! is still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
+        # while LcdDevice.p.is_alive():
+        LcdDevice.p.terminate()
+        LcdDevice.p.join()
+        print('{0}: Proc-Terminated!!! is still Alive: {1}'.format(Utility.getStrDate(), LcdDevice.p.is_alive()))
