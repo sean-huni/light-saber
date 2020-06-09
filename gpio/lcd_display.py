@@ -23,11 +23,11 @@ lcd_backlight = 4
 # Define LCD column and row size for 16x2 LCD.
 lcd_columns = 16
 lcd_rows = 2
-p = None
-x = False
 
 
 class LcdDevice:
+    p = None
+    x = False
     lcd = None
 
     def __init__(self):
@@ -37,22 +37,22 @@ class LcdDevice:
 
     def display_msg(self, msg):
 
-        if(x == True):
-            p.terminate()
+        if(self.x == True):
+            self.p.terminate()
 
         # Print a message
         self.lcd.clear()
         self.lcd.message(str(msg))
         time.sleep(5.0)
 
-        x = True
-        p = Process(target=self.print_cpu_data())
-        p.start()
-        print('{0}: is Thread Alive: {1}'.format(Utility.getStrDate(), p.is_alive()))
+        self.x = True
+        self.p = Process(target=self.print_cpu_data())
+        self.p.start()
+        print('{0}: is Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
-        while x:
+        while self.x:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
