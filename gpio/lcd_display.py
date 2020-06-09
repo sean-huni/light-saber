@@ -37,7 +37,7 @@ class LcdDevice:
 
     def display_msg(self, msg):
 
-        if(self.x == True):
+        if self.x:
             self.p.terminate()
 
         # Print a message
@@ -45,13 +45,13 @@ class LcdDevice:
         self.lcd.message(str(msg))
         time.sleep(5.0)
 
-        self.x = True
-        self.p = Process(target=self.print_cpu_data())
+        self.p = Process(target=self.print_cpu_data)
         self.p.start()
         print('{0}: is Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
+        self.x = True
         while self.x:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
@@ -65,5 +65,4 @@ class LcdDevice:
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
 
-        # await asyncio.sleep(1.0)
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
