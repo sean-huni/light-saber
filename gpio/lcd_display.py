@@ -32,27 +32,27 @@ class LcdDevice:
 
     def __init__(self):
         # Initialize the LCD using the pins above.
-        self.lcd = LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
+        LcdDevice.lcd = LCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
         print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
 
     def display_msg(self, msg):
 
-        if self.x:
-            self.p.terminate()
+        if LcdDevice.x:
+            LcdDevice.p.terminate()
 
         # Print a message
         self.lcd.clear()
         self.lcd.message(str(msg))
         time.sleep(5.0)
 
-        self.p = Process(target=self.print_cpu_data)
-        self.p.start()
+        LcdDevice.p = Process(target=self.print_cpu_data)
+        LcdDevice.p.start()
         print('{0}: is Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
-        self.x = True
-        while self.x:
+        LcdDevice.set_looping(True)
+        while LcdDevice.is_looping():
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
@@ -66,3 +66,11 @@ class LcdDevice:
             time.sleep(1.0)
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
+
+    @staticmethod
+    def is_looping() -> bool:
+        return LcdDevice.x
+
+    @staticmethod
+    def set_looping(x):
+        LcdDevice.x = x
