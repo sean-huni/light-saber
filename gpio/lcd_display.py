@@ -39,7 +39,7 @@ class LcdDevice:
             print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
 
     def display_msg(self, msg):
-        LcdDevice.kill_live_processes('PROC-911')
+        self.kill_live_processes('PROC-911')
 
         # Print a message
         self.lcd.clear()
