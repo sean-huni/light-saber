@@ -26,11 +26,9 @@ lcd_backlight = 4
 lcd_columns = 16
 lcd_rows = 2
 
-global z, brk
-
 
 class LcdDevice:
-    global z, brk
+    brk = False
     p = None
     lcd = None
 
@@ -41,14 +39,7 @@ class LcdDevice:
             print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
 
     def display_msg(self, msg):
-        global z, brk
-
-        try:
-            if brk != True:
-                brk = True
-                LcdDevice.kill_live_processes('Process-1')
-        except NameError:
-            print('Nothing!!!')
+        LcdDevice.kill_live_processes('PROC-911')
 
         # Print a message
         self.lcd.clear()
@@ -56,17 +47,14 @@ class LcdDevice:
         time.sleep(3.0)
 
         # process.daemon = True
-        self.p = Process(target=self.print_cpu_data)  # , args=(self,)
+        self.p = Process(target=self.print_cpu_data, name='PROC-911')  # , args=(self,)
         self.p.start()
         z = self.p
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
-        global z, brk
-        brk = False
-        while not brk:
-            global z, brk
+        while not LcdDevice.brk:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
@@ -77,9 +65,8 @@ class LcdDevice:
             self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
-            print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), brk))
-
-            if brk:
+            print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), LcdDevice.brk))
+            if LcdDevice.brk:
                 print('{0}: Process-Broken'.format(Utility.getStrDate()))
                 break
 
@@ -92,8 +79,11 @@ class LcdDevice:
             try:
                 # Check if process name contains the given name string.
                 if process_name.lower() in proc.name().lower():
+                    LcdDevice.brk = True
+                    proc.terminate()
                     print('{0}: {1} Process-Terminated!!!'.format(Utility.getStrDate(), process_name))
-                    return proc.terminate()
+                    return True
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                print('{0}: {1} Process-1 was not found!!!'.format(Utility.getStrDate(), process_name))
                 pass
         return False
