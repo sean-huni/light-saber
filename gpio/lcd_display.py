@@ -6,6 +6,8 @@ import sys
 import time
 from multiprocessing import *
 
+import psutil
+
 from commons.utility import Utility
 
 sys.path.append('/home/pi/proj/python/pi/Adafruit_Python_CharLCD')
@@ -24,8 +26,7 @@ lcd_backlight = 4
 lcd_columns = 16
 lcd_rows = 2
 
-global z
-brk = False
+global z, brk
 
 
 class LcdDevice:
@@ -41,17 +42,18 @@ class LcdDevice:
 
     def display_msg(self, msg):
         global z, brk
-        # Print a message
-        self.lcd.clear()
-        self.lcd.message(str(msg))
-        time.sleep(3.0)
 
         try:
             if brk != True:
                 brk = True
-                LcdDevice.kill_live_processes()
+                LcdDevice.kill_live_processes('Process-1')
         except NameError:
             print('Nothing!!!')
+
+        # Print a message
+        self.lcd.clear()
+        self.lcd.message(str(msg))
+        time.sleep(3.0)
 
         # process.daemon = True
         self.p = Process(target=self.print_cpu_data)  # , args=(self,)
@@ -78,16 +80,20 @@ class LcdDevice:
             print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), brk))
 
             if brk:
-                print('{0}: Broken'.format(Utility.getStrDate()))
+                print('{0}: Process-Broken'.format(Utility.getStrDate()))
                 break
 
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
     @staticmethod
-    def kill_live_processes():
-        global z, brk
-        # while LcdDevice.p.is_alive():
-        if z.p is not None:
-            z.p.terminate()
-            z.p.join()
-            print('{0}: Prev-Process-Terminated!!! is Alive: {1}'.format(Utility.getStrDate(), z.p.is_alive()))
+    def kill_live_processes(process_name):
+        # Iterate over the all the running process
+        for proc in psutil.process_iter():
+            try:
+                # Check if process name contains the given name string.
+                if process_name.lower() in proc.name().lower():
+                    print('{0}: {1} Process-Terminated!!!'.format(Utility.getStrDate(), process_name))
+                    return proc.terminate()
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+        return False
