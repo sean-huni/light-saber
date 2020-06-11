@@ -31,6 +31,7 @@ class LcdDevice:
     brk = False
     p = None
     lcd = None
+    processes = []
 
     def __init__(self):
         if self.lcd is None:
@@ -49,6 +50,7 @@ class LcdDevice:
         # process.daemon = True
         self.p = Process(target=self.print_cpu_data, name='PROC-911')  # , args=(self,)
         self.p.start()
+        self.processes.append(self.p)
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
@@ -73,6 +75,7 @@ class LcdDevice:
 
     @staticmethod
     def kill_live_processes(process_name):
+        print('{0}: {1}'.format(Utility.getStrDate(), LcdDevice.processes))
         # Iterate over the all the running process
         for proc in psutil.process_iter():
             try:
