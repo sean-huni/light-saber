@@ -6,8 +6,6 @@ import sys
 import time
 from multiprocessing import *
 
-import psutil
-
 from commons.utility import Utility
 
 sys.path.append('/home/pi/proj/python/pi/Adafruit_Python_CharLCD')
@@ -28,6 +26,7 @@ lcd_rows = 2
 
 
 class LcdDevice:
+    proc_count = 0
     brk = False
     p = None
     lcd = None
@@ -40,7 +39,7 @@ class LcdDevice:
             print('{0}: LCD Instance Created!!!'.format(Utility.getStrDate()))
 
     def display_msg(self, msg):
-        self.kill_live_processes('PROC-911')
+        self.kill_live_processes()
 
         # Print a message
         self.lcd.clear()
@@ -48,9 +47,10 @@ class LcdDevice:
         time.sleep(3.0)
 
         # process.daemon = True
-        self.p = Process(target=self.print_cpu_data, name='PROC-911')  # , args=(self,)
+        self.p = Process(target=self.print_cpu_data, name='PROC-{0}'.format(self.proc_count))  # , args=(self,)
         self.p.start()
         self.processes.append(self.p)
+        self.proc_count+=1
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
@@ -75,25 +75,13 @@ class LcdDevice:
         print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
     @staticmethod
-    def kill_live_processes(process_name):
+    def kill_live_processes():
         print('{0}: {1}'.format(Utility.getStrDate(), LcdDevice.processes))
 
         for proc in LcdDevice.processes:
             LcdDevice.brk = True
             proc.terminate()
             print('{0}: {1} Proc-Terminated!!!'.format(Utility.getStrDate(), proc))
+            old_pro = LcdDevice.processes.pop(0)
+            print('{0}: {1} Proc-Popped'.format(Utility.getStrDate(), old_pro))
 
-        # Iterate over the all the running process
-        for proc in psutil.process_iter():
-            try:
-                # print('{0}: {1}.'.format(Utility.getStrDate(), proc.name()))
-                # Check if process name contains the given name string.
-                if process_name.lower() in proc.name().lower():
-                    LcdDevice.brk = True
-                    proc.terminate()
-                    print('{0}: {1} Process-Terminated!!!'.format(Utility.getStrDate(), process_name))
-                    return True
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                print('{0}: {1} Process-1 was not found!!!'.format(Utility.getStrDate(), process_name))
-                pass
-        return False
