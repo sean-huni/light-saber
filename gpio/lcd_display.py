@@ -27,7 +27,6 @@ lcd_rows = 2
 
 class LcdDevice:
     proc_count = 0
-    brk = False
     p = None
     lcd = None
     processes = []
@@ -50,13 +49,12 @@ class LcdDevice:
         self.p = Process(target=self.print_cpu_data, name='PROC-{0}'.format(self.proc_count))  # , args=(self,)
         self.p.start()
         self.processes.append(self.p)
-        self.proc_count+=1
+        self.proc_count += 1
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
-        self.brk = False
-        while not self.brk:
+        while True:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
@@ -67,21 +65,13 @@ class LcdDevice:
             self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
-            print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), self.brk))
-            if self.brk:
-                print('{0}: Process-Broken'.format(Utility.getStrDate()))
-                break
-
-        print('{0}: Multiprocessing print_cpu_data laid to rest.'.format(Utility.getStrDate()))
 
     @staticmethod
     def kill_live_processes():
-        print('{0}: {1}'.format(Utility.getStrDate(), LcdDevice.processes))
+        print('{0}: Current-Active processes: {1}'.format(Utility.getStrDate(), LcdDevice.processes))
 
         for proc in LcdDevice.processes:
-            LcdDevice.brk = True
             proc.terminate()
-            print('{0}: {1} Proc-Terminated!!!'.format(Utility.getStrDate(), proc))
+            print('{0}: {1} isAlive: {2}'.format(Utility.getStrDate(), proc.name, proc.is_alive()))
             old_pro = LcdDevice.processes.pop(0)
-            print('{0}: {1} Proc-Popped'.format(Utility.getStrDate(), old_pro))
-
+            print('{0}: {1} Proc-Popped'.format(Utility.getStrDate(), old_pro.name))
