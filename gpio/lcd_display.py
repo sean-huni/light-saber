@@ -55,6 +55,7 @@ class LcdDevice:
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
+        self.brk = False
         while not self.brk:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
@@ -76,6 +77,12 @@ class LcdDevice:
     @staticmethod
     def kill_live_processes(process_name):
         print('{0}: {1}'.format(Utility.getStrDate(), LcdDevice.processes))
+
+        for proc in LcdDevice.processes:
+            LcdDevice.brk = True
+            proc.terminate()
+            print('{0}: {1} Proc-Terminated!!!'.format(Utility.getStrDate(), proc))
+
         # Iterate over the all the running process
         for proc in psutil.process_iter():
             try:
