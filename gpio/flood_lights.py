@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO
 
 from audio.voice import VoiceCmd
-from . import lcd_display
 
 lBulb = 25     # GPIO.BOARD=22 OR GPIO.BCM=25  >>> GPIO 25
 ledRed = 17    # GPIO.BOARD=11 OR GPIO 17
@@ -10,7 +9,6 @@ ledBlue = 22   # GPIO.BOARD=15 OR GPIO 22
 
 
 class FloodLights:
-    lcd = lcd_display.LcdDevice()
 
     @staticmethod
     def config():

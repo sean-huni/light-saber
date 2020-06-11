@@ -1,3 +1,4 @@
+from commons.utility import Utility
 from gpio.flood_lights import FloodLights
 from gpio.lcd_display import LcdDevice
 
@@ -6,7 +7,7 @@ class SwitchService:
     lcd = LcdDevice()
 
     def __init__(self):
-        self.lcd.x = False
+        print('{0}: SwitchService.__init__'.format(Utility.getStrDate()))
 
     def toggle(self, device, switch):
 

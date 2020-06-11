@@ -64,7 +64,7 @@ class LcdDevice:
             self.lcd.clear()
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
-            print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), LcdDevice.brk))
+            print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), self.brk))
             if self.brk:
                 print('{0}: Process-Broken'.format(Utility.getStrDate()))
                 break
@@ -76,6 +76,7 @@ class LcdDevice:
         # Iterate over the all the running process
         for proc in psutil.process_iter():
             try:
+                # print('{0}: {1}.'.format(Utility.getStrDate(), proc.name()))
                 # Check if process name contains the given name string.
                 if process_name.lower() in proc.name().lower():
                     LcdDevice.brk = True
