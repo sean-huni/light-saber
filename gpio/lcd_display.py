@@ -49,12 +49,11 @@ class LcdDevice:
         # process.daemon = True
         self.p = Process(target=self.print_cpu_data, name='PROC-911')  # , args=(self,)
         self.p.start()
-        z = self.p
         print('{0}: is New-Thread Alive: {1}'.format(Utility.getStrDate(), self.p.is_alive()))
 
     # Async method that executes behind the scenes to print resource-temperatures :-)
     def print_cpu_data(self):
-        while not LcdDevice.brk:
+        while not self.brk:
             cpu = subprocess.getoutput('cat /sys/class/thermal/thermal_zone0/temp')
             gpu = subprocess.getoutput('/opt/vc/bin/vcgencmd measure_temp')
             cpu = re.findall(r'[-+]?\d*\.?\d+|[-+]?\d+', cpu)
@@ -66,7 +65,7 @@ class LcdDevice:
             self.lcd.message('CPU: {0:.2f}{2}C\nGPU: {1:.2f}{2}C'.format(cpu, gpu, chr(223)))
             time.sleep(1.0)
             print('{0}: Should-Break: {1}'.format(Utility.getStrDate(), LcdDevice.brk))
-            if LcdDevice.brk:
+            if self.brk:
                 print('{0}: Process-Broken'.format(Utility.getStrDate()))
                 break
 
